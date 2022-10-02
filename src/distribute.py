@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory, NamedTemporaryFile
 from merge_keys import read_src_path, write_dst_path
 
 logger = logging.getLogger(__name__)
-BASE_PATH = os.path.abspath(os.path.dirname(__file__).parent())
 PRIVATE_KEY = os.getenv("PRIVATE_KEY", "")
 DISTRIBUTION_TARGETS = os.getenv("DISTRIBUTION_TARGETS", "")
 SRC_KEYS_PATH = os.getenv("SRC_KEYS_PATH", "public_keys")
