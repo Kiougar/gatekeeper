@@ -9,6 +9,9 @@ umask 077
 ###
 
 SSH_TIMEOUT=10
+# this assumes it's called from root dir
+SRCFILE="public_keys"
+MERGE_SCRIPT="src/merge_keys.py"
 TMPDIR="$(mktemp -d --tmpdir=.)"
 TMPFILE="${TMPDIR}/tmpfile"
 KEYSFILE="${TMPDIR}/authorized_keys"
@@ -47,7 +50,7 @@ set_authorized_keys() {
 
 edit_authorized_keys() {
     echo "Editing authorized keys..."
-    # TODO: make sure committed authorized keys are present in the KEYSFILE
+    python "${SRCFILE}" "${KEYSFILE}"
 }
 
 distribute() {
