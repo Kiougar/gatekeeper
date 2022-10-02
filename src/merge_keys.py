@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 import argparse
 from typing import TextIO
+
+
+AddData = dict[tuple[str, str], str]
+RemoveData = dict[tuple[str, str], bool]
 
 
 def _parse_args():
@@ -11,6 +17,9 @@ def _parse_args():
 
 
 def _line_pair(line: str) -> tuple[str, str] | None:
+    if line.startswith("#"):
+        line = line[1:].strip()
+
     try:
         p1, p2 = line.split()[:2]
     except ValueError:
@@ -18,65 +27,59 @@ def _line_pair(line: str) -> tuple[str, str] | None:
     return p1, p2
 
 
-def _parse_src(src: TextIO):
+def read_src(src: TextIO) -> tuple[AddData, RemoveData]:
     to_add = {}
     to_remove = {}
     for line in src.readlines():
         line = line.strip()
+        pair = _line_pair(line)
+        if not pair:
+            continue
+
         if line.startswith("#"):
-            pair = _line_pair(line[1:])
-            if pair:
-                to_remove[pair] = True
+            to_remove[pair] = True
         else:
-            pair = _line_pair(line)
-            if pair:
-                to_add[pair] = line
+            to_add[pair] = line
     return to_add, to_remove
 
 
-def _merge_keys(src: TextIO, dst: TextIO) -> list[str]:
-    to_add, to_remove = _parse_src(src)
+def write_dst(dst: TextIO, to_add: AddData, to_remove: RemoveData):
     result = []
     # check existing lines
     for line in dst.readlines():
         line = line.strip()
-        if line.startswith("#"):
-            pair = _line_pair(line[1:])
-            if pair in to_add:
-                # replace line with newly added
-                result.append(to_add.pop(pair))
-                continue
-            elif pair in to_remove:
-                # skip line
-                continue
-        else:
-            pair = _line_pair(line)
-            if pair in to_remove:
-                # skip line
-                continue
-            elif pair in to_add:
-                to_add.pop(pair)
-        # leave line as is
-        result.append(line)
+        pair = _line_pair(line)
+        if pair in to_add:
+            # replace line with newly added
+            result.append(to_add.pop(pair))
+        elif pair not in to_remove:
+            # leave line as is
+            result.append(line)
+
     # add remaining lines
     for line in to_add.values():
         result.append(line)
-    return result
 
-
-def merge_keys(src: TextIO, dst: TextIO):
-    result = _merge_keys(src, dst)
     # write result
     dst.seek(0)
     dst.write("\n".join(result))
     dst.truncate()
 
 
+def read_src_path(src_path: str):
+    with open(src_path, mode="r") as src:
+        return read_src(src)
+
+
+def write_dst_path(dst_path: str, to_add: AddData, to_remove: RemoveData):
+    with open(dst_path, mode="r+") as dst:
+        write_dst(dst, to_add, to_remove)
+
+
 def main():
-    src_file, dst_file = _parse_args()
-    with open(src_file, mode="r") as src:
-        with open(dst_file, mode="r+") as dst:
-            merge_keys(src, dst)
+    src_path, dst_path = _parse_args()
+    to_add, to_remove = read_src_path(src_path)
+    write_dst_path(dst_path, to_add, to_remove)
 
 
 if __name__ == "__main__":
