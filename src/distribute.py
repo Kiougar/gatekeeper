@@ -97,10 +97,23 @@ def distribute():
             logger.info("Created temporary directory.")
             with open(os.path.join(tmpdir_name, "pkey"), mode="w") as fp:
                 fp.write(PRIVATE_KEY)
+            with open(os.path.join(tmpdir_name, "tmptargets"), mode="w") as ft:
+                ft.write(DISTRIBUTION_TARGETS)
             logger.info("Stored PRIVATE_KEY env to file.")
             print(
                 subprocess.run(
-                    ["ls", "-la", tmpdir_name], capture_output=True, check=True
+                    ["ls", "-la", tmpdir_name],
+                    capture_output=True,
+                    encoding="utf-8",
+                    check=True,
+                ).stdout
+            )
+            print(
+                subprocess.run(
+                    ["cat", ft.name],
+                    capture_output=True,
+                    encoding="utf-8",
+                    check=True,
                 ).stdout
             )
             distributor = Distributor(tmpdir_name, fp.name)
