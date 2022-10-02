@@ -94,8 +94,8 @@ def distribute():
     with private_umask():
         with TemporaryDirectory() as tmpdir_name:
             logger.info("Created temporary directory.")
-            with NamedTemporaryFile(dir=tmpdir_name, mode="w+t") as fp:
-                fp.write(PRIVATE_KEY)
+            with NamedTemporaryFile(dir=tmpdir_name) as fp:
+                fp.write(PRIVATE_KEY.encode("ascii"))
                 fp.seek(0)
                 logger.info("Stored PRIVATE_KEY env to file.")
                 distributor = Distributor(tmpdir_name, fp.name)
@@ -103,7 +103,7 @@ def distribute():
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(format="%(levelname)-7s %(message)s", level=logging.INFO)
     distribute()
 
 
