@@ -50,7 +50,7 @@ set_authorized_keys() {
 
 edit_authorized_keys() {
     echo "Editing authorized keys..."
-    python "${SRCFILE}" "${KEYSFILE}"
+    python "${MERGE_SCRIPT}" "${SRCFILE}" "${KEYSFILE}"
 }
 
 distribute() {
