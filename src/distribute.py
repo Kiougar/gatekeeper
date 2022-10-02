@@ -98,6 +98,11 @@ def distribute():
             with open(os.path.join(tmpdir_name, "pkey"), mode="w") as fp:
                 fp.write(PRIVATE_KEY)
             logger.info("Stored PRIVATE_KEY env to file.")
+            print(
+                subprocess.run(
+                    ["ls", "-la", tmpdir_name], capture_output=True, check=True
+                ).stdout
+            )
             distributor = Distributor(tmpdir_name, fp.name)
             distributor.distribute()
 
