@@ -29,7 +29,7 @@ get_authorized_keys() {
     local readonly host="${1}"
 
     echo "Getting authorized keys..."
-    if scp -i "${TMPFILE}" -o ConnectTimeout=${SSH_TIMEOUT} "${host}:~/.ssh/authorized_keys" "${KEYSFILE}"; then
+    if scp -i "${TMPFILE}" -o StrictHostKeyChecking=no -o ConnectTimeout=${SSH_TIMEOUT} "${host}:~/.ssh/authorized_keys" "${KEYSFILE}"; then
         return 0
     else
         return 1
@@ -41,7 +41,7 @@ set_authorized_keys() {
 
     echo "Setting authorized keys..."
     # TODO: remove .new when we are sure this works
-    if scp -i "${TMPFILE}" -o ConnectTimeout=${SSH_TIMEOUT} "${KEYSFILE}" "${host}:~/.ssh/authorized_keys.new"; then
+    if scp -i "${TMPFILE}" -o StrictHostKeyChecking=no -o ConnectTimeout=${SSH_TIMEOUT} "${KEYSFILE}" "${host}:~/.ssh/authorized_keys.new"; then
         return 0
     else
         return 1
