@@ -2,7 +2,8 @@ import logging
 import os
 import subprocess
 from contextlib import contextmanager
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+from tempfile import TemporaryDirectory
+
 from merge_keys import read_src_path, write_dst_path
 
 logger = logging.getLogger(__name__)
@@ -94,11 +95,11 @@ def distribute():
     with private_umask():
         with TemporaryDirectory() as tmpdir_name:
             logger.info("Created temporary directory.")
-            with NamedTemporaryFile(dir=tmpdir_name) as fp:
-                fp.write(PRIVATE_KEY.encode("utf-8"))
-                logger.info("Stored PRIVATE_KEY env to file.")
-                distributor = Distributor(tmpdir_name, fp.name)
-                distributor.distribute()
+            with open(os.path.join(tmpdir_name, "pkey"), mode="w") as fp:
+                fp.write(PRIVATE_KEY)
+            logger.info("Stored PRIVATE_KEY env to file.")
+            distributor = Distributor(tmpdir_name, fp.name)
+            distributor.distribute()
 
 
 def main():
