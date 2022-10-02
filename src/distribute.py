@@ -95,8 +95,7 @@ def distribute():
         with TemporaryDirectory() as tmpdir_name:
             logger.info("Created temporary directory.")
             with NamedTemporaryFile(dir=tmpdir_name) as fp:
-                fp.write(PRIVATE_KEY.encode("ascii"))
-                fp.seek(0)
+                fp.write(PRIVATE_KEY.encode("utf-8"))
                 logger.info("Stored PRIVATE_KEY env to file.")
                 distributor = Distributor(tmpdir_name, fp.name)
                 distributor.distribute()
