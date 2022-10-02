@@ -40,8 +40,7 @@ set_authorized_keys() {
     local readonly host="${1}"
 
     echo "Setting authorized keys..."
-    # TODO: remove .new when we are sure this works
-    if scp -i "${TMPFILE}" -o StrictHostKeyChecking=no -o ConnectTimeout=${SSH_TIMEOUT} "${KEYSFILE}" "${host}:~/.ssh/authorized_keys.new"; then
+    if scp -i "${TMPFILE}" -o StrictHostKeyChecking=no -o ConnectTimeout=${SSH_TIMEOUT} "${KEYSFILE}" "${host}:~/.ssh/authorized_keys"; then
         return 0
     else
         return 1
