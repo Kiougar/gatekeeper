@@ -75,7 +75,7 @@ def merge_keys(src: TextIO, dst: TextIO):
 def main():
     src_file, dst_file = _parse_args()
     with open(src_file, mode="r") as src:
-        with open(dst_file, mode="+") as dst:
+        with open(dst_file, mode="r+w") as dst:
             merge_keys(src, dst)
 
 

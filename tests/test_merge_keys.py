@@ -89,5 +89,6 @@ t_type3 k_key3
 t_type2 k_key1"""
         )
 
-        if __name__ == "__main__":
-            main()
+
+if __name__ == "__main__":
+    main()
