@@ -108,7 +108,15 @@ def distribute():
             )
             print(
                 subprocess.run(
-                    ["cat", fp.name, "|", "wc -l"],
+                    ["wc", "-l", fp.name],
+                    capture_output=True,
+                    encoding="utf-8",
+                    check=True,
+                ).stdout
+            )
+            print(
+                subprocess.run(
+                    ["wc", fp.name],
                     capture_output=True,
                     encoding="utf-8",
                     check=True,
