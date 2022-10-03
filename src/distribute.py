@@ -30,17 +30,14 @@ def private_umask():
 class Distributor:
     def __init__(self, tmpdir: str, private_key: str):
         self.__src_data = None
-        self.keys_name = "authorized_keys"
-        self.tmpdir = tmpdir
-        self.private_key = private_key
-        self.scp_timeout = 10
+        self.keys_path = os.path.join(tmpdir, "authorized_keys")
         self.scp_options = [
             "-i",
-            self.private_key,
+            private_key,
             "-o",
             "StrictHostKeyChecking=no",
             "-o",
-            f"ConnectTimeout={self.scp_timeout}",
+            f"ConnectTimeout=10",
         ]
 
     @property
@@ -48,10 +45,6 @@ class Distributor:
         if self.__src_data is None:
             self.__src_data = read_src_path(SRC_KEYS_PATH)
         return self.__src_data
-
-    @property
-    def keys_path(self):
-        return os.path.join(self.tmpdir, self.keys_name)
 
     def distribute(self):
         total = count = 0
