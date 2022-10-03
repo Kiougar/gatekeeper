@@ -96,27 +96,29 @@ def distribute():
         with TemporaryDirectory() as tmpdir_name:
             logger.info("Created temporary directory.")
             with open(os.path.join(tmpdir_name, "pkey"), mode="w") as fp:
-                fp.write(PRIVATE_KEY)
+                fp.write(f"{PRIVATE_KEY}\n")
             logger.info("Stored PRIVATE_KEY env to file.")
             print(
                 subprocess.run(
-                    ["ls", "-la", tmpdir_name],
-                    capture_output=True,
-                    encoding="utf-8",
-                    check=True,
-                ).stdout
-            )
-            print(
-                subprocess.run(
-                    ["wc", "-l", fp.name],
-                    capture_output=True,
-                    encoding="utf-8",
-                    check=True,
-                ).stdout
-            )
-            print(
-                subprocess.run(
                     ["wc", fp.name],
+                    capture_output=True,
+                    encoding="utf-8",
+                    check=True,
+                ).stdout
+            )
+            print(
+                "head: '%s'"
+                % subprocess.run(
+                    ["head", "-c5", fp.name],
+                    capture_output=True,
+                    encoding="utf-8",
+                    check=True,
+                ).stdout
+            )
+            print(
+                "tail: '%s'"
+                % subprocess.run(
+                    ["tail", "-c5", fp.name],
                     capture_output=True,
                     encoding="utf-8",
                     check=True,
