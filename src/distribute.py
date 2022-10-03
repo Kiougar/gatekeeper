@@ -1,5 +1,7 @@
 import logging
 import os
+import random
+import string
 import subprocess
 from contextlib import contextmanager
 from tempfile import TemporaryDirectory
@@ -10,6 +12,10 @@ logger = logging.getLogger(__name__)
 PRIVATE_KEY = os.getenv("PRIVATE_KEY", "")
 DISTRIBUTION_TARGETS = os.getenv("DISTRIBUTION_TARGETS", "")
 SRC_KEYS_PATH = os.getenv("SRC_KEYS_PATH", "public_keys")
+
+
+def rand_name(length=8):
+    return "".join(random.choice(string.ascii_letters) for _ in range(length))
 
 
 @contextmanager
@@ -91,47 +97,16 @@ class Distributor:
         return True
 
 
-def distribute():
+def main():
     with private_umask():
         with TemporaryDirectory() as tmpdir_name:
             logger.info("Created temporary directory.")
-            with open(os.path.join(tmpdir_name, "pkey"), mode="w") as fp:
+            with open(os.path.join(tmpdir_name, rand_name()), mode="w") as fp:
                 fp.write(f"{PRIVATE_KEY}\n")
             logger.info("Stored PRIVATE_KEY env to file.")
-            print(
-                subprocess.run(
-                    ["wc", fp.name],
-                    capture_output=True,
-                    encoding="utf-8",
-                    check=True,
-                ).stdout
-            )
-            print(
-                "head: '%s'"
-                % subprocess.run(
-                    ["head", "-c5", fp.name],
-                    capture_output=True,
-                    encoding="utf-8",
-                    check=True,
-                ).stdout
-            )
-            print(
-                "tail: '%s'"
-                % subprocess.run(
-                    ["tail", "-c5", fp.name],
-                    capture_output=True,
-                    encoding="utf-8",
-                    check=True,
-                ).stdout
-            )
-            distributor = Distributor(tmpdir_name, fp.name)
-            distributor.distribute()
-
-
-def main():
-    logging.basicConfig(format="%(levelname)-7s %(message)s", level=logging.INFO)
-    distribute()
+            Distributor(tmpdir_name, fp.name).distribute()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)-7s %(message)s", level=logging.INFO)
     main()
