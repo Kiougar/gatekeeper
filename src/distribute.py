@@ -85,7 +85,7 @@ class Distributor:
                 check=True,
             )
         except subprocess.CalledProcessError as e:
-            logger.warning("%s: %s\n- Out:\n%s\n- Err:\n%s", msg, e, e.stdout, e.stderr)
+            logger.warning("%s: %s\n%s", msg, e, e.stderr)
             return False
         return True
 
